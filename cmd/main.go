@@ -25,8 +25,9 @@ func init() {
 
 func main() {
 	app := &cli.Command{
-		Name:  "expirator",
-		Usage: "Report client secret and SAML certificate expirations across an Azure tenant",
+		Name:    "expirator",
+		Version: utils.GetVersion(),
+		Usage:   "Report client secret and SAML certificate expirations across an Azure tenant",
 		Description: "Authenticates with client credentials against Microsoft Graph and reports\n" +
 			"expiration metadata for app registration secrets/certs and enterprise app\n" +
 			"SAML signing certs. Read-only — never reads secret values, only metadata.\n\n" +
@@ -64,7 +65,7 @@ func main() {
 			&cli.StringFlag{
 				Name:    "format",
 				Aliases: []string{"f"},
-				Usage:   "Output format: table, csv, or json",
+				Usage:   "Output format: table, csv, json",
 				Value:   "table",
 				Sources: cli.EnvVars("OUTPUT_FORMAT"),
 				Validator: func(s string) error {
@@ -172,7 +173,7 @@ func do(ctx context.Context, c *cli.Command) error {
 		}
 	case config.FORMAT_JSON:
 		// JSON format includes all fields for maximum fidelity and machine-readability
-		jsonBytes, err := json.MarshalIndent(rep.Entries, "", "  ")
+		jsonBytes, err := json.Marshal(rep.Entries)
 		if err != nil {
 			return fmt.Errorf("marshaling JSON: %w", err)
 		}
