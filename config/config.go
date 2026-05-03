@@ -10,6 +10,7 @@ const (
 	FORMAT_TABLE format = "table"
 	FORMAT_CSV   format = "csv"
 	FORMAT_JSON  format = "json"
+	FORMAT_NONE  format = "none"
 )
 
 type Config struct {
@@ -22,6 +23,7 @@ type Config struct {
 	GroupSources       bool
 	OutputFile         string
 	Format             format
+	WebhookURL         string
 }
 
 type AzureConfig struct {
@@ -46,6 +48,7 @@ func FromCmd(cmd *cli.Command) (*Config, error) {
 		GroupSources:       cmd.Bool("group-sources"),
 		OutputFile:         cmd.String("output-file"),
 		Format:             cmd.String("format"),
+		WebhookURL:         cmd.String("webhook-url"),
 	}
 
 	return cfg, nil

@@ -77,6 +77,13 @@ func main() {
 				},
 			},
 			&cli.StringFlag{
+				Name:    "webhook-url",
+				Aliases: []string{"u"},
+				Usage:   "If set, a POST request will be sent with the report as JSON to this URL. ",
+				Value:   "",
+				Sources: cli.EnvVars("WEBHOOK_URL"),
+			},
+			&cli.StringFlag{
 				Name:     "az-tenant-id",
 				Usage:    "Azure tenant ID",
 				Sources:  cli.EnvVars("AZ_TENANT_ID"),
@@ -111,7 +118,7 @@ func do(ctx context.Context, c *cli.Command) error {
 
 	// Open output file (or default to stdout)
 	var f *os.File = os.Stdout
-	if cfg.OutputFile != "" && cfg.OutputFile != "-" {
+	if cfg.OutputFile != "" && cfg.OutputFile != "-" && cfg.Format != config.FORMAT_NONE {
 		f, err = os.Create(cfg.OutputFile)
 		if err != nil {
 			return fmt.Errorf("creating output file: %w", err)
@@ -125,8 +132,18 @@ func do(ctx context.Context, c *cli.Command) error {
 		return err
 	}
 
+	// Send a report to the webhook URL if configured
+	if cfg.WebhookURL != "" {
+		if err := utils.SendWebhook(ctx, cfg.WebhookURL, rep.Entries); err != nil {
+			// Don't fail the whole program if the webhook fails; just log the error and continue
+			log.Printf("sending webhook: %v", err)
+		}
+	}
+
 	// Output results in the requested format
 	switch cfg.Format {
+	case config.FORMAT_NONE:
+		// No output
 	case config.FORMAT_TABLE:
 		// Table format uses a subset of the fields for brevity
 
