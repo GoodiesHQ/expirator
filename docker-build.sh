@@ -4,9 +4,6 @@
 #   ./docker-build.sh --push                 # multi-platform build and push to registry
 #   ./docker-build.sh --local                # single-platform build for current machine, loaded into Docker
 #   IMAGE=myregistry.azurecr.io/expirator ./docker-build.sh --push
-#
-# Note: Docker containers always run Linux, even on macOS. linux/arm64 runs on Apple Silicon,
-# linux/amd64 runs on Intel. --local detects your host arch automatically.
 set -euo pipefail
 
 VERSION="$(tr -d '\r\n' < VERSION)"
